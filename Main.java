@@ -30,11 +30,31 @@ public class Main {
     // ======== 10 REQUIRED METHODS (Students fill these) ========
 
     public static String mostProfitableCommodityInMonth(int month) {
-        return "DUMMY"; 
-    }
+        if (month < 0 || month >= MONTHS) return "INVALID_MONTH"; // check month validity
 
+        int bestIndex =0; // index of the best commodity
+        int bestProfit = Integer.MIN_VALUE; // highest total profit found
+
+        // Loop through all commodities
+        for (int c = 0; c < COMMS; c++) {
+            int sum = 0; // total profit of this commodity for the month
+            for (int d = 0; d < DAYS; d++)
+                sum += profits[month][d][c]; // sum profits for each day
+            if (sum > bestProfit) { // if this commodity is better
+                bestProfit = sum;
+                bestIndex = c;
+            }
+        }
+        // Return the commodity name + total profit
+        return commodities[bestIndex] + " " + bestProfit;
+    }
     public static int totalProfitOnDay(int month, int day) {
-        return 1234;
+        if (month < 0 || month >= MONTHS || day < 1 || day > DAYS)
+            return -99999; // invalid input return
+        int sum = 0;
+        for (int c = 0; c < COMMS; c++)
+            sum += profits[month][day - 1][c]; // day - 1 because index numbers start from 0
+        return sum;
     }
 
     public static int commodityProfitInRange(String commodity, int from, int to) {
