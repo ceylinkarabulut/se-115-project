@@ -99,7 +99,7 @@ public class Main {
         return bestDay;
     }
 
-    public static String bestMonthForCommodity(String comm) {
+    public static String bestMonthForCommodity(String commodity) {
             int cIndex = -1;
             for (int i = 0; i < COMMS; i++)
                 if (commodities[i].equals(commodity)) {
@@ -146,21 +146,70 @@ public class Main {
     }
 
     public static int daysAboveThreshold(String comm, int threshold) {
-        return 1234;
+        int cIndex = -1;
+        for (int i = 0; i < COMMS; i++)
+            if (commodities[i].equals(commodity)) {
+                cIndex = i;
+                break;
+            }
+        if (cIndex == -1)
+            return -1;
+        int count = 0;
+        for (int m = 0; m < MONTHS; m++)
+            for (int d = 0; d < DAYS; d++)
+                if (profits[m][d][cIndex] > threshold)
+                    count++;
+        return count;
     }
-
     public static int biggestDailySwing(int month) {
-        return 1234;
+        if (month < 0 || month >= MONTHS)
+            return -99999;
+        int max = 0;
+        for (int d = 0; d < DAYS - 1; d++) { // compare day d and d+1
+            int sum1 = 0, sum2 = 0;
+            for (int c = 0; c < COMMS; c++) {
+                sum1 += profits[month][d][c];
+                sum2 += profits[month][d + 1][c];
+            }
+            int diff = Math.abs(sum2 - sum1); //difference
+            if (diff > max) max = diff;
+        }
+        return max;
     }
-
     public static String compareTwoCommodities(String c1, String c2) {
-        return "DUMMY is better by 1234";
+        int i1 = -1, i2 = -1;
+        for (int i = 0; i < COMMS; i++) {
+            if (commodities[i].equals(c1)) i1 = i;
+            if (commodities[i].equals(c2)) i2 = i;
+        }
+        if (i1 == -1 || i2 == -1)
+            return "INVALID_COMMODITY";
+        int sum1 = 0, sum2 = 0;
+        for (int m = 0; m < MONTHS; m++)
+            for (int d = 0; d < DAYS; d++) {
+                sum1 += profits[m][d][i1];
+                sum2 += profits[m][d][i2];
+            }
+        if (sum1 == sum2) return "Equal";
+        if (sum1 > sum2) return c1 + " is better by " + (sum1 - sum2);
+        return c2 + " is better by " + (sum2 - sum1);
     }
-
     public static String bestWeekOfMonth(int month) {
-        return "DUMMY";
+        if (month < 0 || month >= MONTHS) return "INVALID_MONTH";
+        int bestWeek = 1, bestSum = Integer.MIN_VALUE;
+        // 4 weeks per month, 7 days per week
+        for (int w = 0; w < 4; w++) {
+            int start = w * 7, sum = 0;
+            for (int d = start; d < start + 7; d++)
+                for (int c = 0; c < COMMS; c++)
+                    sum += profits[month][d][c];
+            if (sum > bestSum) {
+                bestSum = sum;
+                bestWeek = w + 1;
+            }
+        }
+        return "Week " + bestWeek;
     }
-
     public static void main(String[] args) {
         loadData();
         System.out.println("Data loaded – ready for queries");
